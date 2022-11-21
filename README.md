@@ -11,7 +11,7 @@ Note: I made changes to `init.sh` file, such that it only installs what I need. 
 # Configuration
 PYTHON_VERSION=3.9.14  # Python version
 VENV_DIR=.  # Where to store your virtualenv
-VENV_NAME=vis3Denv  # Name of your virtualenv
+VENV_NAME=vis3denv  # Name of your virtualenv
 
 # Load modules
 module load python3/$PYTHON_VERSION
@@ -34,7 +34,7 @@ pip install tifffile
 pip install Pillow
 pip install imagecodecs
 ```
-- From `https://raw.githubusercontent.com/vedranaa/goodies/main/vis3D` get files `vis3D.py` and `setup.py`. For example using `wget` where -N overwrittes if newer, and -O overwrittes into file. (Update, I made `get_code.sh`. TODO: add.)
+- From `https://raw.githubusercontent.com/vedranaa/goodies/main/vis3d` get files `vis3d.py` and `setup.py`. For example using `wget` where -N overwrittes if newer, and -O overwrittes into file. (Update, I made `get_code.sh`. TODO: add.)
 ```
 wget path/file.py
 wget -N path/file.py
@@ -52,10 +52,10 @@ linuxsh -X
 source init.sh
 ```
 
-- Use `vis3D` from the terminal with one of the following
+- Use `vis3d` from the terminal with one of the following
 ```
-vis3D
-vis3D path
-vis3D file 
+vis3d
+vis3d path
+vis3d file 
 ```
 

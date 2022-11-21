@@ -11,11 +11,11 @@ TODO: requires PyQt5, tifffile, Pillow
 from setuptools import setup
 
 setup(
-    name='vis3D',
+    name='vis3d',
     version='0.0.1',
     entry_points={
         'console_scripts': [
-            'vis3D=vis3D:main'
+            'vis3d=vis3d:main'
         ]
     }
 )
