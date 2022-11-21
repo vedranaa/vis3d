@@ -1,14 +1,14 @@
 """
 Run from command line as
-vis3D https://qim.compute.dtu.dk/data-repository/InSegt_data/3D/nerves_part.tiff
+vis3d https://qim.compute.dtu.dk/data-repository/InSegt_data/3D/nerves_part.tiff
 or (assuming text file with the link exists)
-vis3D /Users/vand/Documents/PROJECTS2/goodies/goodies_to_merge/vis3D/nerves_part_url_link.txt
+vis3d /Users/vand/Documents/PROJECTS2/goodies/goodies_to_merge/vis3d/nerves_part_url_link.txt
 or (assuming a folder with tif images exists)
-vis3D /Users/vand/Documents/PROJECTS2/goodies/goodies_to_merge/testing_data/walnut
+vis3d /Users/vand/Documents/PROJECTS2/goodies/goodies_to_merge/testing_data/walnut
 or (assuming a stacked tif file exists)
-vis3D /Users/vand/Documents/PROJECTS2/goodies/goodies_to_merge/testing_data/nerves_part.tiff
+vis3d /Users/vand/Documents/PROJECTS2/goodies/goodies_to_merge/testing_data/nerves_part.tiff
 or
-vis3D and point to a supported file or folder.
+vis3d and point to a supported file or folder.
 
 
 Currently supported:
@@ -39,7 +39,7 @@ import numpy as np
 import urllib.request
 
   
-class Vis3D(PyQt5.QtWidgets.QWidget):
+class vis3d(PyQt5.QtWidgets.QWidget):
     
     def __init__(self, getslice, Z, z=None):
         
@@ -92,15 +92,15 @@ class Vis3D(PyQt5.QtWidgets.QWidget):
                 4*self.imagePix.height()/3),1) # downsize if larger than (2000,1500)
         self.resize(initial_zoom*self.imagePix.width(), 
                     initial_zoom*self.imagePix.height())
-        self.showInfo('<i>Starting Vis3D</i> <br> For help, hit <b>H</b>', 5000)
-        print("Starting Vis3D. For help, hit 'H'.")
+        self.showInfo('<i>Starting vis3d</i> <br> For help, hit <b>H</b>', 5000)
+        print("Starting vis3d. For help, hit 'H'.")
     
     # constants
     transparentColor = PyQt5.QtGui.QColor(0, 0, 0, 0)    
     zoomColor = PyQt5.QtGui.QColor(0, 0, 0, 128) 
     
     helpText = (
-        '<i>Help for Vis3DD</i> <br>' 
+        '<i>Help for vis3dD</i> <br>' 
         '<b>KEYBOARD COMMANDS:</b> <br>' 
         '&nbsp; &nbsp; <b>H</b> shows this help <br>' 
         '&nbsp; &nbsp; <b>Arrow keys</b> change slice <br>' 
@@ -355,7 +355,7 @@ def slicer(filename):
     
     # Special case when passed 3D numpy array.
     if ((type(filename)==np.ndarray) and (filename.ndim==3)):
-        readslice, Z = Vis3D.volSlicer(filename)
+        readslice, Z = vis3d.volSlicer(filename)
  
     # Normal case when given filename/foldername/url
     else:
@@ -366,21 +366,21 @@ def slicer(filename):
 
         if mode: # file type identified
             if mode=='tifvol':
-                readslice, Z = Vis3D.tifVolSlicer(filename)
+                readslice, Z = vis3d.tifVolSlicer(filename)
             elif mode=='folder':
-                readslice, Z = Vis3D.folderSlicer(filename)
+                readslice, Z = vis3d.folderSlicer(filename)
             elif mode=='url':
-                readslice, Z = Vis3D.urlPathSlicer(filename)    
+                readslice, Z = vis3d.urlPathSlicer(filename)    
             
-            try: # read one slice (the last one) before initiating vis3D
+            try: # read one slice (the last one) before initiating vis3d
                 readslice(Z-1)       
             except:
                 raise Exception(f"Can't read volume slices from filename {filename}.")
         else:
             raise Exception(f'Mode not identified for fielname {filename}.')
             
-    vis3D = Vis3D(readslice, Z)
-    vis3D.show()
+    vis3d = vis3d(readslice, Z)
+    vis3d.show()
     app.exec() 
         
     
@@ -397,7 +397,7 @@ def main():
 if __name__ == '__main__':
     
     '''
-    Vis3D may be used from command-line. If no filename  or url is given, 
+    vis3d may be used from command-line. If no filename  or url is given, 
     it may be chosen via en dialog window.
     '''
     main()
