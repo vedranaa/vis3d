@@ -2,7 +2,30 @@
 
 - Follow setps from 
 https://lab.compute.dtu.dk/patmjen/hcp_tutorials/-/blob/main/HPC_Python_Guide.md  
-Note: I made changes to `init.sh` file, such that it only installs what I need. TODO: add content here. 
+Note: I made changes to `init.sh` file, such that it only installs what I need. TODO: add content here. My `init.sh` is
+```
+#!/bin/bash
+# Based on simple init script for Python on DTU HPC
+# by Patrick M. Jensen, patmjen@dtu.dk, 2022
+
+# Configuration
+PYTHON_VERSION=3.9.14  # Python version
+VENV_DIR=.  # Where to store your virtualenv
+VENV_NAME=vis3Denv  # Name of your virtualenv
+
+# Load modules
+module load python3/$PYTHON_VERSION
+module load $(module avail -o modulepath -t -C "python-${PYTHON_VERSION}" | grep "numpy/")
+
+# Create virtualenv if needed and activate it
+if [ ! -d "${VENV_DIR}/${VENV_NAME}" ]
+then
+    echo INFO: Did not find virtualenv. Creating...
+    virtualenv "${VENV_DIR}/${VENV_NAME}"
+fi
+source "${VENV_DIR}/${VENV_NAME}/bin/activate"
+```
+
 
 - Install modules. I guess this could be avoided if specifying requirenments in setup.
 ```
