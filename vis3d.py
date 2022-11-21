@@ -39,7 +39,7 @@ import numpy as np
 import urllib.request
 
   
-class vis3d(PyQt5.QtWidgets.QWidget):
+class Vis3d(PyQt5.QtWidgets.QWidget):
     
     def __init__(self, getslice, Z, z=None):
         
@@ -348,7 +348,6 @@ def resolve_mode(filename):
     return filename, mode
 
 
-
 def slicer(filename):
     
     app = PyQt5.QtWidgets.QApplication([]) 
@@ -366,11 +365,11 @@ def slicer(filename):
 
         if mode: # file type identified
             if mode=='tifvol':
-                readslice, Z = vis3d.tifVolSlicer(filename)
+                readslice, Z = Vis3d.tifVolSlicer(filename)
             elif mode=='folder':
-                readslice, Z = vis3d.folderSlicer(filename)
+                readslice, Z = Vis3d.folderSlicer(filename)
             elif mode=='url':
-                readslice, Z = vis3d.urlPathSlicer(filename)    
+                readslice, Z = Vis3d.urlPathSlicer(filename)    
             
             try: # read one slice (the last one) before initiating vis3d
                 readslice(Z-1)       
@@ -379,7 +378,7 @@ def slicer(filename):
         else:
             raise Exception(f'Mode not identified for fielname {filename}.')
             
-    vis3d = vis3d(readslice, Z)
+    vis3d = Vis3d(readslice, Z)
     vis3d.show()
     app.exec() 
         
