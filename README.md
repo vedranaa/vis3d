@@ -2,7 +2,7 @@
 
 - Follow setps from 
 https://lab.compute.dtu.dk/patmjen/hcp_tutorials/-/blob/main/HPC_Python_Guide.md  
-Note: I made changes to `init.sh` file, such that it only installs what I need. My `init.sh` is
+Note: I made changes to `init.sh` file, such that it only installs what I need.
 ```
 #!/bin/bash
 # Based on simple init script for Python on DTU HPC
@@ -34,11 +34,10 @@ pip install tifffile
 pip install Pillow
 pip install imagecodecs
 ```
-- From `https://raw.githubusercontent.com/vedranaa/goodies/main/vis3d` get files `vis3d.py` and `setup.py`. For example using `wget` where -N overwrittes if newer, and -O overwrittes into file. (Update, I made `get_code.sh`. TODO: add.)
+- From `https://github.com/vedranaa/vis3d` get files `vis3d.py` and `setup.py`. Either clone, or use  `wget` where -N overwrittes if newer. For this you can make a  `get_code.sh`
 ```
-wget path/file.py
-wget -N path/file.py
-wget path/file.py -O file.py
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/vis3d.py 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/setup.py
 ````
 
 - Editable install
