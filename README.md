@@ -2,7 +2,7 @@
 
 - Follow setps from 
 https://lab.compute.dtu.dk/patmjen/hcp_tutorials/-/blob/main/HPC_Python_Guide.md  
-Note: I made changes to `init.sh` file, such that it only installs what I need. TODO: add content here. My `init.sh` is
+Note: I made changes to `init.sh` file, such that it only installs what I need. My `init.sh` is
 ```
 #!/bin/bash
 # Based on simple init script for Python on DTU HPC
