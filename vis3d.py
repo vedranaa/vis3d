@@ -267,12 +267,19 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
    
     @staticmethod
     def grayToPixmap(gray):
-        """Np grayscale array to Qt pixmap. Assumes an 8-bit grayscale image."""
+        """Np grayscale array to Qt pixmap. Works for 8-bit grayscale image. Limited support for 16-bit."""
+
+        format = PyQt5.QtGui.QImage.Format_Grayscale8
+        if gray.dtype == np.uint16:
+            try:
+                format = PyQt5.QtGui.QImage.Format_Grayscale16
+            except:
+                print('Grayscale16 introduced in Qt 5.13, you have {PyQt5.QtCore.QT_VERSION_STR}')
         
         bytesPerLine = gray.nbytes//gray.shape[0]
         qimage = PyQt5.QtGui.QImage(gray.data, gray.shape[1], gray.shape[0],
                                     bytesPerLine,
-                                    PyQt5.QtGui.QImage.Format_Grayscale8)
+                                    format)
         qpixmap = PyQt5.QtGui.QPixmap(qimage)
         return qpixmap
     
@@ -295,14 +302,83 @@ def chose_file():
         return volumename
     # else retuns None
     
-
+# ------------------------------------------------------- #
 # -- SUPPORT FOR MORE VOLUME FORMATS TO BE ADDED BELOW -- #
 # You need to: 
-#     - extend resolve_input such that it recongnizes the new format
-#     - add a slicer function for this format
+#     - Add slicer function for this format. It has to 
+#       return uint8 (or uint16) numpy image!
+#     - Extend resolve_input to recongnize the new format.
+
+def volFileSlicer(volfile):
+    ''' Slicing .vol file based on info from .vgi file.  Assumes that .vgi file
+    with the same name is is placed in the same folder.'''
+
+    def get_fileinfo(vgifile):
+        '''This is reverse-engineered by looking at .vgi file.
+        Later, I found a reader here: 
+        https://github.com/waveform-computing/ctutils/blob/release-0.3/ctutils/readers.py 
+        '''
+        size, type, range, bpe = None, None, None, None
+        line = True
+        
+        # I use ordering of fields in the vgi file to read the SECOND datarange. 
+        # I don't know whether this generalizes.
+        with open(vgifile) as f:
+            while not(size) and line:
+                line = f.readline()
+                if line.startswith('Size = '):
+                    size = [int(n) for n in line.split(' = ')[1].split()]
+            while not(type) and line:
+                line = f.readline()
+                if line.startswith('Datatype = '):
+                    type = line.split(' = ')[1].strip()
+            while not(range) and line:
+                line = f.readline()
+                if line.startswith('datarange = '):
+                    range = [float(n) for n in line.split(' = ')[1].split()]
+            while not(bpe) and line:
+                line = f.readline()
+                if line.startswith('BitsPerElement = '):
+                    bpe = int(line.split(' = ')[1])
+        try:
+            dtype = {('float', 32): np.float32,
+                    ('float', 64): np.float64,
+                    ('unsigned integer', 16): np.uint16,
+                    ('unsigned integer', 32): np.uint32}[(type, bpe)]
+
+            # function for values in range of uint16 (but not casted dtype)
+            normalize = {('float', 32): 
+                            lambda im: (65535*(im - range[0])/(range[1] - range[0])),
+                    ('float', 64): 
+                            lambda im: (65535*(im - range[0])/(range[1] - range[0])),
+                    ('unsigned integer', 16): 
+                            lambda im: im,
+                    ('unsigned integer', 32): 
+                            lambda im: (im/256)}[(type, bpe)]
+        except:
+            raise Exception(f"Can't recognize data type from {type} {bpe}")
+
+        return size, dtype, normalize
+        
+    size, dtype, normalize = get_fileinfo(volfile[:-4] + '.vgi')
+    print(size)
+    print(dtype)
+    print(normalize)
+
+    
+    Z = size[0]
+    n = size[1] * size[2]
+    
+    def readslice(z):
+        im = np.fromfile(volfile, dtype=dtype, count=n, 
+                offset=n * z * dtype().nbytes)
+        im = normalize(im.reshape(size[1:])).astype(np.uint16)
+        return im
+    
+    return readslice, Z
 
 
-def folderSlicer(foldername):
+def tiffFolderSlicer(foldername):
     # TODO: figure out dominant image format in the folder
     D = sorted(glob.glob(foldername + '/*.tif*'))
     Z = len(D)
@@ -310,7 +386,7 @@ def folderSlicer(foldername):
     # readslice = lambda z: np.array(PIL.Image.open(D[z]))
     return readslice, Z
 
-def tifVolSlicer(filename):
+def tiffFileSlicer(filename):
     tif = tifffile.TiffFile(filename)
     Z = len(tif.pages)
     readslice = lambda z: tifffile.imread(filename, key = z)
@@ -324,7 +400,7 @@ def urlSlicer(url):
         return(np.array(volfile))
     return readslice, Z
 
-def volSlicer(vol):
+def npSlicer(vol):
     Z = vol.shape[0]
     readslice = lambda z: vol[z]
     return readslice, Z
@@ -334,12 +410,13 @@ def resolve_input(volumename):
     a folder containing images, an url of tiff stacked file, a tiff stacked file,
     or a text file containing a name of the volume.'''
 
-    # mode 'numpy' is special case, e.g. when calling vis3d from another program.
+    # Mode 'numpy' is special case, e.g. when calling vis3d from another program.
     if ((type(volumename)==np.ndarray) and (volumename.ndim==3)):
-        return volSlicer(volumename)
+        return npSlicer(volumename) + (volumename,)
 
     elif os.path.isdir(volumename):
-        return folderSlicer(volumename)
+
+        return tiffFolderSlicer(volumename) + (volumename,)
 
     elif ((len(volumename)>4) and (volumename[:4]=='http') and 
           ('tif' in os.path.splitext(volumename)[-1])):
@@ -349,13 +426,19 @@ def resolve_input(volumename):
         ext = os.path.splitext(volumename)[-1]
         
         if 'tif' in ext:
-            return tifVolSlicer(volumename)
+            return tiffFileSlicer(volumename) + (volumename,)
         
-        # a single file containing volume name (recursion)
+        if ext == '.vol':
+            return volFileSlicer(volumename) + (volumename,)
+        
+        # A single file containing volume name (recursion).
+        # This is the case where volumename changes.
         elif (ext=='.txt') or (ext=='.link'):
             with open(volumename) as f:
                 content = f.read().strip()
                 return resolve_input(content)
+    
+    return None, None, None
  
 
 def slicer(volumename):
@@ -366,15 +449,15 @@ def slicer(volumename):
     if not volumename:
         volumename = chose_file()
             
-    readslice, Z = resolve_input(volumename)
+    readslice, Z, volumename = resolve_input(volumename)
 
     if readslice: # file type identified
         try: # read one slice (the last one) before initiating vis3d
             readslice(Z-1)       
         except:
-            raise Exception(f"Can't read slices from volume {volumename}.")
+            raise Exception(f"Can't read slices from volume {volumename}")
     else:
-        raise Exception(f'Mode not identified for volume {volumename}.')
+        raise Exception(f'Volume format not identified for {volumename}')
             
     vis3d = Vis3d(readslice, Z)
     vis3d.show()
@@ -388,7 +471,6 @@ def main():
         volumename = None        
     
     slicer(volumename)
-    
          
     
 if __name__ == '__main__':
