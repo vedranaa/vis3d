@@ -27,7 +27,7 @@ fi
 source "${VENV_DIR}/${VENV_NAME}/bin/activate"
 ```
 
-- Call `source init.sh`
+- Call `. init.sh`
 
 - Install modules. I guess this could be avoided if specifying requirements in the setup file.
 ```
@@ -56,7 +56,7 @@ pip install -e .
 
 ```
 linuxsh -X
-source init.sh
+. init.sh
 ```
 
 - Use `vis3d` from the terminal with one of the following
