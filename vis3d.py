@@ -7,7 +7,7 @@ or (assuming a folder with tif images exists)
 vis3d /Users/vand/Documents/PROJECTS2/goodies/goodies_to_merge/testing_data/walnut
 or (assuming a stacked tif file exists)
 vis3d /Users/vand/Documents/PROJECTS2/goodies/goodies_to_merge/testing_data/nerves_part.tiff
-or
+or simply run
 vis3d and point to a supported file or folder.
 
 
@@ -21,6 +21,8 @@ TODO add support for:
 - folder with other image types readable with PIL
 - dcm images (via pydicom)
 - .nii.gz file, load it as numpy array via nibabel
+- npy file containing 3d numpy array
+- a folder containing vol + vgi file 
 
 TODO: Have basic version work with PIL and add optional imports of tifffile, 
 nibabel and/or pydicom.
@@ -106,43 +108,7 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
         '&nbsp; &nbsp; <b>Arrow keys</b> change slice <br>' 
         '<b>MOUSE DRAG:</b> <br>' 
         '&nbsp; &nbsp; Zooms ')
-    
-    @classmethod
-    def folderSlicer(cls, filename):
-        # TODO: figure out dominant image format in the folder
-        D = sorted(glob.glob(filename + '/*.tif*'))
-        Z = len(D)
-        readslice = lambda z: tifffile.imread(D[z])
-        
-        return readslice, Z
-
-    @classmethod
-    def tifVolSlicer(cls, filename):
-        tif = tifffile.TiffFile(filename)
-        Z = len(tif.pages)
-        readslice = lambda z: tifffile.imread(filename, key = z)
-        
-        return readslice, Z
-
-    @classmethod
-    def urlPathSlicer(cls, url):
-        
-        volfile = PIL.Image.open(urllib.request.urlopen(url))
-        Z = volfile.n_frames
-
-        def readslice(z):
-            volfile.seek(z)
-            return(np.array(volfile))
-        
-        return readslice, Z
-    
-    @classmethod  
-    def volSlicer(cls, vol):
-        Z = vol.shape[0]
-        readslice = lambda z: vol[z]
-        
-        return readslice, Z
-        
+            
     def showHelp(self):
         self.timer.stop()
         self.showText(self.helpText)
@@ -319,64 +285,96 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
 def chose_file():
     file_dialog = PyQt5.QtWidgets.QFileDialog()
     
-    
     # TODO, file_dialog.setHistory
     # A text file with history may be placed in
     # pathlib.Path(__file__).resolve()
     
     if file_dialog.exec_(): # file chosen
-        filenames = file_dialog.selectedFiles()
-        filename = filenames[0]
-        return filename
+        volumenames = file_dialog.selectedFiles()
+        volumename = volumenames[0]
+        return volumename
     # else retuns None
     
-def resolve_mode(filename):
-    mode = None
-    if os.path.isdir(filename):
-        mode = 'folder'
-    elif ((len(filename)>4) and (filename[:4]=='http') and 
-          ('tif' in os.path.splitext(filename)[-1])):
-        mode = 'url'
-    else:
-        ext = os.path.splitext(filename)[-1]
+
+# -- SUPPORT FOR MORE VOLUME FORMATS TO BE ADDED BELOW -- #
+# You need to: 
+#     - extend resolve_input such that it recongnizes the new format
+#     - add a slicer function for this format
+
+
+def folderSlicer(foldername):
+    # TODO: figure out dominant image format in the folder
+    D = sorted(glob.glob(foldername + '/*.tif*'))
+    Z = len(D)
+    readslice = lambda z: tifffile.imread(D[z])
+    # readslice = lambda z: np.array(PIL.Image.open(D[z]))
+    return readslice, Z
+
+def tifVolSlicer(filename):
+    tif = tifffile.TiffFile(filename)
+    Z = len(tif.pages)
+    readslice = lambda z: tifffile.imread(filename, key = z)
+    return readslice, Z
+
+def urlSlicer(url):
+    volfile = PIL.Image.open(urllib.request.urlopen(url))
+    Z = volfile.n_frames
+    def readslice(z):
+        volfile.seek(z)
+        return(np.array(volfile))
+    return readslice, Z
+
+def volSlicer(vol):
+    Z = vol.shape[0]
+    readslice = lambda z: vol[z]
+    return readslice, Z
+
+def resolve_input(volumename):
+    '''Given volumename resolve what this input is: a numpy array, 
+    a folder containing images, an url of tiff stacked file, a tiff stacked file,
+    or a text file containing a name of the volume.'''
+
+    # mode 'numpy' is special case, e.g. when calling vis3d from another program.
+    if ((type(volumename)==np.ndarray) and (volumename.ndim==3)):
+        return volSlicer(volumename)
+
+    elif os.path.isdir(volumename):
+        return folderSlicer(volumename)
+
+    elif ((len(volumename)>4) and (volumename[:4]=='http') and 
+          ('tif' in os.path.splitext(volumename)[-1])):
+        return urlSlicer(volumename)
+
+    else:  # a single file
+        ext = os.path.splitext(volumename)[-1]
+        
         if 'tif' in ext:
-            mode = 'tifvol'
+            return tifVolSlicer(volumename)
+        
+        # a single file containing volume name (recursion)
         elif (ext=='.txt') or (ext=='.link'):
-            with open(filename) as f:
+            with open(volumename) as f:
                 content = f.read().strip()
-                filename, mode = resolve_mode(content)
-    return filename, mode
+                return resolve_input(content)
+ 
 
-
-def slicer(filename):
+def slicer(volumename):
     
     app = PyQt5.QtWidgets.QApplication([]) 
     
-    # Special case when passed 3D numpy array.
-    if ((type(filename)==np.ndarray) and (filename.ndim==3)):
-        readslice, Z = vis3d.volSlicer(filename)
- 
-    # Normal case when given filename/foldername/url
-    else:
-        if not filename:
-            filename = chose_file()
-                
-        filename, mode = resolve_mode(filename)
-
-        if mode: # file type identified
-            if mode=='tifvol':
-                readslice, Z = Vis3d.tifVolSlicer(filename)
-            elif mode=='folder':
-                readslice, Z = Vis3d.folderSlicer(filename)
-            elif mode=='url':
-                readslice, Z = Vis3d.urlPathSlicer(filename)    
+    # Open file dialog if not given volume name
+    if not volumename:
+        volumename = chose_file()
             
-            try: # read one slice (the last one) before initiating vis3d
-                readslice(Z-1)       
-            except:
-                raise Exception(f"Can't read volume slices from filename {filename}.")
-        else:
-            raise Exception(f'Mode not identified for fielname {filename}.')
+    readslice, Z = resolve_input(volumename)
+
+    if readslice: # file type identified
+        try: # read one slice (the last one) before initiating vis3d
+            readslice(Z-1)       
+        except:
+            raise Exception(f"Can't read slices from volume {volumename}.")
+    else:
+        raise Exception(f'Mode not identified for volume {volumename}.')
             
     vis3d = Vis3d(readslice, Z)
     vis3d.show()
@@ -385,18 +383,18 @@ def slicer(filename):
     
 def main():
     if len(sys.argv)>1:
-        filename = sys.argv[1]
+        volumename = sys.argv[1]
     else:
-        filename = None        
+        volumename = None        
     
-    slicer(filename)
+    slicer(volumename)
     
          
     
 if __name__ == '__main__':
     
     '''
-    vis3d may be used from command-line. If no filename  or url is given, 
+    vis3d may be used from command-line. If no volumename  or url is given, 
     it may be chosen via en dialog window.
     '''
     main()
