@@ -13,3 +13,5 @@
 # Checkpoints
 .ipynb_checkpoints
 
+cotton_tifffile_path.txt
+volread.py
