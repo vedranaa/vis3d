@@ -20,12 +20,13 @@ Currently supported:
 TODO add support for: 
 - folder with other image types readable with PIL
 - dcm images (via pydicom)
-- .nii.gz file, load it as numpy array via nibabel
+- .nii.gz file via nibabel
 - npy file containing 3d numpy array
-- a folder containing vol + vgi file 
+- nrrd file (nearly raw), as in 2022_QIM_54_Butterflies
+- vol + vgi file -- update: working on this
+- txrm file (and txm), as in 2022_DANFIX_UTMOST
 
-TODO: Have basic version work with PIL and add optional imports of tifffile, 
-nibabel and/or pydicom.
+TODO: Have basic version work with PIL and add optional imports 
     
 """
 
@@ -361,10 +362,6 @@ def volFileSlicer(volfile):
         return size, dtype, normalize
         
     size, dtype, normalize = get_fileinfo(volfile[:-4] + '.vgi')
-    print(size)
-    print(dtype)
-    print(normalize)
-
     
     Z = size[0]
     n = size[1] * size[2]
@@ -420,7 +417,7 @@ def resolve_input(volumename):
 
     elif ((len(volumename)>4) and (volumename[:4]=='http') and 
           ('tif' in os.path.splitext(volumename)[-1])):
-        return urlSlicer(volumename)
+        return urlSlicer(volumename) + (volumename,)
 
     else:  # a single file
         ext = os.path.splitext(volumename)[-1]
@@ -448,20 +445,22 @@ def slicer(volumename):
     # Open file dialog if not given volume name
     if not volumename:
         volumename = chose_file()
-            
-    readslice, Z, volumename = resolve_input(volumename)
 
-    if readslice: # file type identified
-        try: # read one slice (the last one) before initiating vis3d
-            readslice(Z-1)       
-        except:
-            raise Exception(f"Can't read slices from volume {volumename}")
-    else:
-        raise Exception(f'Volume format not identified for {volumename}')
-            
-    vis3d = Vis3d(readslice, Z)
-    vis3d.show()
-    app.exec() 
+    if volumename:    
+        readslice, Z, volumename = resolve_input(volumename)
+
+        if readslice: # file type identified
+            try: # read one slice (the last one) before initiating vis3d
+                readslice(Z-1)       
+            except:
+                raise Exception(f"Can't read slices from volume {volumename}")
+        else:
+            raise Exception(f'Volume format not identified for {volumename}')
+                
+        vis3d = Vis3d(readslice, Z)
+        vis3d.show()
+        app.exec() 
+
         
     
 def main():

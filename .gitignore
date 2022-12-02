@@ -13,4 +13,11 @@
 # Checkpoints
 .ipynb_checkpoints
 
-volread.py
+bone_vol_path.txt
+bugnist_vol_path.txt
+cotton_tifffile_path.txt
+dental_implant_2_tifffolder_path.txt
+dental_implant_tifffolder_path.txt
+bone_proj_folder_path.txt
+kideny_tifffolder_path.txt
+kidney_tifffile_path.txt
