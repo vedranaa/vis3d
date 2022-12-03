@@ -13,11 +13,14 @@
 # Checkpoints
 .ipynb_checkpoints
 
-cotton_tifffile_path.txt
-#bone_vol_path.txt
-#bugnist_vol_path.txt
-#dental_implant_2_tifffolder_path.txt
-#dental_implant_tifffolder_path.txt
-#bone_proj_folder_path.txt
-#kideny_tifffolder_path.txt
-#kidney_tifffile_path.txt
+
+
+links/cotton_tifffile_path.txt
+#links/bone_vol_path.txt
+#links/bugnist_vol_path.txt
+#links/dental_implant_2_tifffolder_path.txt
+#links/dental_implant_tifffolder_path.txt
+#links/bone_proj_folder_path.txt
+#links/kideny_tifffolder_path.txt
+#links/kidney_tifffile_path.txt
+
