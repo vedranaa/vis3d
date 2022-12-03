@@ -35,17 +35,19 @@ pip install PyQt5
 pip install tifffile
 pip install Pillow
 pip install imagecodecs
+pip install compoundfiles
 ```
 
-- From `https://github.com/vedranaa/vis3d` get files `vis3d.py` and `setup.py`. Either clone, or use  `wget` where -N overwrittes if newer. For this I made  `get_code.sh` which is executed using `. get_code.sh`.
+- Get files from `https://github.com/vedranaa/vis3d`, at least `vis3d.py`, `slicers.py`, and `setup.py`. Either clone the repository, or use  `wget` where -N overwrittes if newer. For this I made  `get_code.sh` which is executed using `. get_code.sh`.
 ```
 #!/bin/bash
 
 wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/vis3d.py 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/slicers.py 
 wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/setup.py
 ````
 
-- Editable install when in the folder containing `setup.py`
+- Run editable install when in the folder containing `setup.py`
 ```
 pip install -e .
 ```
