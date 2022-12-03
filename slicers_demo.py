@@ -129,3 +129,27 @@ plt.show()
 
 
 # %%
+import glob
+import slicers
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib
+matplotlib.use('Qt5Agg')
+
+sources = glob.glob('*.txt')
+fig, ax = plt.subplots(3, int(np.ceil(len(sources)/3)))
+
+for a, s in zip(ax.ravel(), sources):
+
+    slicer = slicers.slicer(s)
+    filename = slicer.filename
+    Z = len(slicer)
+    a.imshow(slicer[Z//2])
+    a.set_title(f'...{filename[max(0,len(filename)-30):]}\n{Z}x{slicer.imshape}, {slicer.dtype}', 
+        size=8)
+    
+plt.show()
+
+
+
+# %%

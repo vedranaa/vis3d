@@ -3,6 +3,7 @@ Utility for efficient slicing of CT data.
 VgiSlicer and TxmSlicer are heavily inspired by 
 https://ctutils.readthedocs.io.
 
+
 Author: Vedrana Dahl, 2022
 '''
 
@@ -10,35 +11,77 @@ import numpy as np
 import configparser  # for easy reading of .vgi file
 import compoundfiles  # for reading .txm files
 import struct  # for conversion from bytes to values
-import glob  
-import PIL
-import urllib
+import PIL.Image
+import urllib.request
 import tifffile
+import os
 
 class Slicer:
     ''' Base class for volume slicers.'''
-    # Mandatory attributes: dtype, imshape
-    # Recommended atributes: range
-    # Mandatory methods: __len__, __getitem__
+
+    def __init__(self):
+        self.dtype = None
+        self.imshape = None
+        self.range = None
+        self.filename = ''
+    
+    def __len__(self):
+        return 0
 
     def loadvol(self):
-        ''' TODO
-        Default loads slice by slice. It might be more efficient to 
-        implement a custom loader which utilizes the ordering of slices'''
-        pass
-       
+        ''' Default loads slice by slice. For most slicers, it would be more 
+        efficient to implement a custom loader which utilizes the ordering of 
+        slices'''
+        
+        vol = np.empty((len(self),) + self.imshape, dtype=self.dtype)
+        for z in len(self):
+            vol[z] = self[z]
+        return vol
+        
+    def toint8_function(self):
+        ''' Returns a suitable function which casts slicer output to uint8.
+        TODO: include other relevant options.'''
+        
+        if self.dtype == np.dtype('uint8'):
+            return(lambda im: im)
+        
+        if self.dtype == np.dtype('uint16'):
+            return(lambda im: (im/256).astype('uint8'))
+
+        if self.dtype == np.dtype('float32'):       
+            if self.range is None:
+                return Slicer.slicewise
+            else:
+                return lambda im: Slicer.to_range(im, self.range)
+
+        else:
+            return Slicer.slicewise
+
+
+    @staticmethod
+    def to_range(im, range):
+        im -= range[0]
+        im *= 1/(range[1] - range[0])
+        return (255*im).astype('uint8')
+    
+
+    @staticmethod
+    def slicewise(im):
+        im -= im.min()
+        im *= 1/im.max()
+        return (255*im).astype('uint8')
+
 
 class VgiSlicer(Slicer):
     '''Reads slices from .vol and an associated .vgi file.'''
     
     def __init__(self, filename):
-                
-        vgifilename = filename
-        volfilename = filename.replace('.vgi', '.vol')
 
+        super().__init__()        
+        self.filename = filename
         parser = configparser.ConfigParser()
         config = ''
-        with open(vgifilename) as f:
+        with open(filename) as f:
             line = f.readline() # skipping first line
             while line:
                 line = f.readline()
@@ -59,6 +102,7 @@ class VgiSlicer(Slicer):
         self._length = volsize[2]
         self._imlength = volsize[0] * volsize[1]
         self.imshape = (volsize[0], volsize[1])
+        volfilename = filename.replace('.vgi', '.vol')
         self._stream = open(volfilename)  # speedup if stream kept open
 
     def __del__(self):
@@ -77,6 +121,9 @@ class TxmSlicer(Slicer):
     '''Reads slices from a .txm file.'''
     
     def __init__(self, filename):
+
+        super().__init__()   
+        self.filename = filename
         self._data = compoundfiles.CompoundFileReader(filename)
         # '<L' is for little-endian, unsigned long
         width = struct.unpack('<L', self._data.open(
@@ -113,8 +160,12 @@ class TxmSlicer(Slicer):
 
 
 class TiffFolderSlicer(Slicer):
+
     def __init__(self, foldername):
-        self._filenames = sorted(glob.glob(foldername + '/*.tif*'))
+
+        super().__init__()   
+        self.filename = foldername
+        self._filenames = list_imfiles(foldername, ['.tif', '.tiff'])
         im0 = tifffile.TiffFile(self._filenames[0])
         self.dtype = im0.pages[0].dtype
         self.imshape = im0.pages[0].shape
@@ -128,8 +179,12 @@ class TiffFolderSlicer(Slicer):
 
 
 class FolderSlicer(Slicer):
-    def __init__(self, foldername, ext='tif*'):
-        self._filenames = sorted(glob.glob(foldername + '/*.' + ext ))
+
+    def __init__(self, foldername, ext=['.tif', '.tiff']):
+
+        super().__init__()   
+        self.filename = foldername
+        self._filenames = list_imfiles(foldername, ext)
         im0 = PIL.Image.open(self._filenames[0])
         self.dtype = PIL_mode_to_np_dtype(im0.mode)
         self.imshape = im0.size
@@ -145,6 +200,9 @@ class FolderSlicer(Slicer):
 class TiffFileSlicer(Slicer):
     
     def __init__(self, filename):
+
+        super().__init__()   
+        self.filename = filename
         self._tiffFile = tifffile.TiffFile(filename)
         self._len = len(self._tiffFile.pages)
         self.dtype = self._tiffFile.pages[0].dtype
@@ -163,6 +221,9 @@ class TiffFileSlicer(Slicer):
 class FileSlicer(Slicer):
     
     def __init__(self, filename):
+
+        super().__init__()   
+        self.filename = filename
         self._volfile = PIL.Image.open(filename)
         self.dtype = PIL_mode_to_np_dtype(self._volfile.mode)
         self.imshape = self._volfile.size
@@ -179,12 +240,18 @@ class FileSlicer(Slicer):
 
     @classmethod
     def from_url(cls, url):
-        return cls(urllib.request.urlopen(url))
+        slicer = cls(urllib.request.urlopen(url))
+        slicer.filename = url
+        return slicer
     
 
 
 class npSlicer(Slicer):
+    ''' A silly slicer, allowing vis3d to work on numpy arrays. '''
+
     def __init__(self, vol):
+
+        super().__init__()   
         self._vol = vol
         self.dtype = vol.dtype
         self.imshape = vol.shape[1:]
@@ -194,7 +261,6 @@ class npSlicer(Slicer):
 
     def __getitem__(self, z):
         return self._vol[z]
-
 
 
 def PIL_mode_to_np_dtype(mode):
@@ -209,8 +275,72 @@ def PIL_mode_to_np_dtype(mode):
     return dtype
 
 
+def list_imfiles(folder, ext=['.tif', '.tiff']):
+
+    files = os.listdir(folder)
+    if ext is None:
+        extlist = ['.png', '.jpg', '.tiff', '.tif']
+        hist = dict.fromkeys(extlist, 0)
+        for f in files:
+            ext = os.path.splitext(f)[-1].lower()
+            if ext in extlist:
+                hist[ext] += 1
+        ext = max(hist)
+
+    # usint `in ext` to allow for both .tif and .tiff
+    files = [os.path.join(folder, f) for f in files
+            if os.path.splitext(f)[-1].lower() in ext]
+    files = sorted(files)
+    return files
 
 
+def slicer(source):
+    '''Given a source (tries to) resolve which slicer to use. This supports
+    vgi+vol files, txm files, numpy arrays, a folder containing tiff images, 
+    an url of tiff stacked file, a tiff stacked file, or a text file containing 
+    a name of any of such files volume.
 
+    '''
 
+    if ((type(source)==np.ndarray) and (source.ndim==3)):
+        return npSlicer(source)
+
+    elif os.path.isdir(source):
+        try:
+            return TiffFolderSlicer(source)  # trying tiff
+        except:
+            return FolderSlicer(source, None)  # trying any type images
+             
+    elif ((len(source)>4) and (source[:4]=='http') and 
+          ('tif' in os.path.splitext(source)[-1].lower())):
+        return FileSlicer.from_url(source)
+
+    else:  # a single file
+        ext = os.path.splitext(source)[-1]
+        
+        if 'tif' in ext:
+            #  TiffFileSlicer seems to handle strange filenames
+            #  better than FileSlicer
+            try:
+                return TiffFileSlicer(source) 
+            except:
+                return FileSlicer(source) 
+        
+        if ext == '.vgi':
+            return VgiSlicer(source)
+        
+        if ext == '.vol':
+            return VgiSlicer(source.replace('.vol', '.vgi'))
+
+        if ext == '.txm':
+            return TxmSlicer(source)
+        
+        # A single file containing volume name, resolved by recursion.
+        elif ext=='.txt':
+            with open(source) as f:
+                content = f.read().strip()
+                return slicer(content) 
+        else:
+            raise Exception(f"Couldn't resolve volume {source}.")
+    
 # %%

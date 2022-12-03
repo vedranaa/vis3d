@@ -37,7 +37,7 @@ pip install Pillow
 pip install imagecodecs
 ```
 
-- From `https://github.com/vedranaa/vis3d` get files `vis3d.py` and `setup.py`. Either clone, or use  `wget` where -N overwrittes if newer. For this I made  `get_code.sh` which is executed using `source get_code.sh`.
+- From `https://github.com/vedranaa/vis3d` get files `vis3d.py` and `setup.py`. Either clone, or use  `wget` where -N overwrittes if newer. For this I made  `get_code.sh` which is executed using `. get_code.sh`.
 ```
 #!/bin/bash
 
