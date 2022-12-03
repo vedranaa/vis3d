@@ -18,7 +18,7 @@ Currently supported:
 
 TODO test whether txm works for txrm file, as in 2022_DANFIX_UTMOST
 TODO Functionality for changing vmin and vmax
-TODO When pressing I, show info about volume
+TODO When pressing 'I', show info about the volume
 
 TODO add support for: 
 - dcm images (via pydicom?)
