@@ -52,6 +52,8 @@ wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/setup.py
 pip install -e .
 ```
 
+- You can also get the links to a few volumes from 3DIM from the `links` folder
+
 
 ## USE
 - Navigate to the folder containing `init.sh` which will set the environment etc.
