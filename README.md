@@ -51,7 +51,7 @@ wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/setup.py
 pip install -e .
 ```
 
-- Optionally, you can also get the links to a few volumes from 3DIM from the `links_gbar` folder. I made a folder to which I copied files using `get_links.sh` similar to before. 
+- Optionally, you can also get the links to a few volumes from 3DIM from the `links_gbar` folder. For this, I made a subfoder under my project to which I copied files using `get_links.sh` similar to before. 
 
 ```
 #!/bin/bash
