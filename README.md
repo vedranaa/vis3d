@@ -2,7 +2,7 @@
 
 - Follow setps from 
 https://lab.compute.dtu.dk/patmjen/hcp_tutorials/-/blob/main/HPC_Python_Guide.md  
-In particular, log on a real node using X11 forwarding `linuxsh -X`, navigate to project folder and place `init.sh` there. I made changes to `init.sh` such that it only instals what I need. 
+In particular, log on a real node using X11 forwarding `linuxsh -X`, navigate to project folder and place `init.sh` there. I made changes to `init.sh` such that it only installs what I need. 
 
 ```
 #!/bin/bash
@@ -37,7 +37,6 @@ pip install Pillow
 pip install imagecodecs
 pip install compoundfiles
 ```
-
 - Get files from `https://github.com/vedranaa/vis3d`, at least `vis3d.py`, `slicers.py`, and `setup.py`. Either clone the repository, or use  `wget` where -N overwrittes if newer. For this I made  `get_code.sh` which is executed using `. get_code.sh`.
 ```
 #!/bin/bash
@@ -52,7 +51,20 @@ wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/setup.py
 pip install -e .
 ```
 
-- You can also get the links to a few volumes from 3DIM from the `links` folder
+- Optionally, you can also get the links to a few volumes from 3DIM from the `links_gbar` folder. I made a folder to which I copied files using `get_links.sh` similar to before. 
+
+```
+#!/bin/bash
+
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/bone_projections.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/bone_reconstruction.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/bugnist.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/dental_implant_silk.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/dental_implant_stitched.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/kidney_elettra.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/kidney_rat3.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/nerves_part_url.txt 
+````
 
 
 ## USE
