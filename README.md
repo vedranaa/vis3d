@@ -56,14 +56,14 @@ pip install -e .
 ```
 #!/bin/bash
 
-wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/bone_projections.txt 
-wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/bone_reconstruction.txt 
-wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/bugnist.txt 
-wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/dental_implant_silk.txt 
-wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/dental_implant_stitched.txt 
-wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/kidney_elettra.txt 
-wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/kidney_rat3.txt 
-wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links/nerves_part_url.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/bone_projections.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/bone_reconstruction.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/bugnist.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/dental_implant_silk.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/dental_implant_stitched.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/kidney_elettra.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/kidney_rat3.txt 
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/nerves_part_url.txt 
 ````
 
 

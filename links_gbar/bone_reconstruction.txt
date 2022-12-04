@@ -1,1 +1,1 @@
-/Volumes/3dimage/projects/2022_QIM_52_Bone/raw_data_3DIM/femur_01_b 1 [2022-03-09 10.52.18]/femur_01_b 1_recon/femur_01_b 1.vol
+/dtu/3d-imaging-center/projects/2022_QIM_52_Bone/raw_data_3DIM/femur_01_b 1 [2022-03-09 10.52.18]/femur_01_b 1_recon/femur_01_b 1.vol

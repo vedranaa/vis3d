@@ -1,1 +1,1 @@
-/Volumes/3dimage/projects/2020_QIM_22_rat_kidney/raw_data_extern/results/Distance18cm_8bit/17-2_200ms_d18cm_0p9um/slices/
+/dtu/3d-imaging-center/projects/2020_QIM_22_rat_kidney/raw_data_extern/results/Distance18cm_8bit/17-2_200ms_d18cm_0p9um/slices/
