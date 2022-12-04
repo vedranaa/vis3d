@@ -1,1 +1,0 @@
-/dtu/3d-imaging-center/projects/2021_QIM_14_dental_implants/raw_data_extern/Bone_implants_project/s16007_silk/matlab_aligned_downscaled

@@ -1,1 +1,0 @@
-/dtu/3d-imaging-center/projects/2022_QIM_55_BugNIST/raw_data_3DIM/bugnist_tube [2022-04-12 12.53.01]/bugnist_tube_recon/bugnist_tube.vol
