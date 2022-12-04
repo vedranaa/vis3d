@@ -28,13 +28,15 @@ class Slicer:
     def __len__(self):
         return 0
 
-    def loadvol(self):
+    def loadvol(self, verbose=False):
         ''' Default loads slice by slice. For most slicers, it would be more 
         efficient to implement a custom loader which utilizes the ordering of 
         slices'''
         
         vol = np.empty((len(self),) + self.imshape, dtype=self.dtype)
-        for z in len(self):
+        for z in range(len(self)):
+            if verbose:
+                print(f'slice {z}/{len(self)}')
             vol[z] = self[z]
         return vol
         
@@ -53,7 +55,7 @@ class Slicer:
                 return Slicer.slicewise
             else:
                 return self.to_range
-                
+
         else:
             return Slicer.slicewise
         

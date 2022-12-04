@@ -48,6 +48,7 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
         self.format = PyQt5.QtGui.QImage.Format_Grayscale8
         self.to_format = slicer.to_uint8()
         if slicer.dtype == np.uint16:
+            print('went into if')
             try:  # instead, I could check which version is installed
                 self.format = PyQt5.QtGui.QImage.Format_Grayscale16
                 self.to_format = slicers.Slicer.identity  # keep uint16
