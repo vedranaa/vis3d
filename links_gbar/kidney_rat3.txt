@@ -1,1 +1,0 @@
-/dtu/3d-imaging-center/projects/2020_QIM_22_rat_kidney/raw_data_3DIM/rat3/rat3_22micron/20200903 rat 3_LFOV-50kV-LE3-10s-22.6micro_recon_Export.tiff
