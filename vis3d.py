@@ -46,14 +46,13 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
             
         # Pixmap layers and atributes
         self.format = PyQt5.QtGui.QImage.Format_Grayscale8
-        self.toint_function = slicer.toint8_function()
+        self.to_format = slicer.to_uint8()
         if slicer.dtype == np.uint16:
             try:  # instead, I could check which version is installed
                 self.format = PyQt5.QtGui.QImage.Format_Grayscale16
-                self.toint_function = lambda im: im  # keep uint16
+                self.to_format = slicers.Slicer.identity  # keep uint16
             except:
                 print('Grayscale16 introduced in Qt 5.13, you have {PyQt5.QtCore.QT_VERSION_STR}')
-                self.toint_function = slicer.toint8_function()
         self.updateImagePix()
         self.zoomPix = PyQt5.QtGui.QPixmap(self.imagePix.width(), self.imagePix.height()) 
         self.zoomPix.fill(self.transparentColor)
@@ -62,7 +61,7 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
         # coordinate system and image coordinate system
         self.zoomFactor = 1 # accounts for resizing of the widget and for zooming in the part of the image
         self.padding = PyQt5.QtCore.QPoint(0, 0) # padding when aspect ratio of image and widget does not match
-        self.target = PyQt5.QtCore.QRect(0, 0, self.width(),self.height()) # part of the target being drawn on
+        self.target = PyQt5.QtCore.QRect(0, 0, self.width(), self.height()) # part of the target being drawn on
         self.source = PyQt5.QtCore.QRect(0, 0, 
                 self.imagePix.width(), self.imagePix.height()) # part of the image being drawn
         self.offset = PyQt5.QtCore.QPoint(0, 0) # offset between image center and area of interest center
@@ -75,10 +74,10 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
         
         # Label for displaying text overlay
         self.textField = PyQt5.QtWidgets.QLabel(self)
-        self.textField.setStyleSheet("background-color: rgba(191,191,191,191)")
+        self.textField.setStyleSheet("background-color: rgba(191, 191, 191, 191)")
         self.textField.setTextFormat(PyQt5.QtCore.Qt.RichText)
-        self.textField.resize(0,0)
-        self.textField.move(10,10)     
+        self.textField.resize(0, 0)
+        self.textField.move(10, 10)     
         self.hPressed = False
         self.textField.setAttribute(PyQt5.QtCore.Qt.WA_TransparentForMouseEvents)
         
@@ -90,28 +89,40 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
         # Playtime
         self.setTitle()
         initial_zoom = min(2000/max(self.imagePix.width(), 
-                4*self.imagePix.height()/3),1) # downsize if larger than (2000,1500)
-        self.resize(initial_zoom*self.imagePix.width(), 
-                    initial_zoom*self.imagePix.height())
+                4*self.imagePix.height()/3), 1) # downsize if larger than (2000,1500)
+        self.resize(int(initial_zoom*self.imagePix.width()), 
+                    int(initial_zoom*self.imagePix.height()))
         self.showInfo('<i>Starting vis3d</i> <br> For help, hit <b>H</b>', 5000)
         print("Starting vis3d. For help, hit 'H'.")
-    
+
+        format_str = {24: 'uint8', 28: 'uint16'}[int(self.format)]
+        to_format_str = self.to_format.__name__
+
+        self.helpText = (
+            '<i>Help for vis3dD</i> <br>' 
+            '<b>KEYBOARD COMMANDS:</b> <br>' 
+            '&nbsp; &nbsp; <b>H</b> shows this help <br>' 
+            '&nbsp; &nbsp; <b>Arrow keys</b> change slice <br>' 
+            '<b>MOUSE DRAG:</b> <br>' 
+            '&nbsp; &nbsp; Zooms <br><br>'
+            '<i>Volume and vis information</i> <br>'
+            f'<b>Vol size:</b> {len(self.slicer)} x {self.slicer.imshape}<br>' 
+            f'<b>Vol dtype:</b> {self.slicer.dtype}<br>' 
+            f'<b>Vol range:</b> {self.slicer.range}<br>'
+            f'<b>Vis format:</b> {format_str}<br>'
+            f'<b>Vis formatting:</b> {to_format_str}'
+            )
+
+
     # constants
     transparentColor = PyQt5.QtGui.QColor(0, 0, 0, 0)    
     zoomColor = PyQt5.QtGui.QColor(0, 0, 0, 128) 
     
-    helpText = (
-        '<i>Help for vis3dD</i> <br>' 
-        '<b>KEYBOARD COMMANDS:</b> <br>' 
-        '&nbsp; &nbsp; <b>H</b> shows this help <br>' 
-        '&nbsp; &nbsp; <b>Arrow keys</b> change slice <br>' 
-        '<b>MOUSE DRAG:</b> <br>' 
-        '&nbsp; &nbsp; Zooms ')
 
     def updateImagePix(self):  
         '''Transforms np image to Qt Pixmap (via Qt Image)'''
         gray = self.slicer[self.z]
-        gray = self.toint_function(gray)
+        gray = self.to_format(gray)
         bytesPerLine = gray.nbytes//gray.shape[0]
         qimage = PyQt5.QtGui.QImage(gray.data, 
                                     gray.shape[1], gray.shape[0],
@@ -226,17 +237,17 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
     
     def resetZoom(self):
         """ Back to original zoom """
-        self.source = PyQt5.QtCore.QRect(0,0,self.imagePix.width(), 
+        self.source = PyQt5.QtCore.QRect(0, 0, self.imagePix.width(), 
                                          self.imagePix.height())
         self.showInfo('Reseting zoom to ' + self.formatQRect(self.source))        
-        self.offset = PyQt5.QtCore.QPoint(0,0)
+        self.offset = PyQt5.QtCore.QPoint(0, 0)
         self.adjustTarget()        
         self.newZoomValues = None
             
     def keyPressEvent(self, event):
 
         if event.key()==PyQt5.QtCore.Qt.Key_Up: # uparrow          
-            self.z = min(self.z+1, len(self.slicer)-1)
+            self.z = min(self.z + 1, len(self.slicer)-1)
             self.updateImagePix()
             self.update()
 
@@ -246,7 +257,7 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
             self.update()
             
         elif event.key()==PyQt5.QtCore.Qt.Key_Right: 
-            self.z = min(self.z+10, len(self.slicer)-1)
+            self.z = min(self.z+10, len(self.slicer) - 1)
             self.updateImagePix()
             self.update()
 

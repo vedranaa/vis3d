@@ -38,32 +38,37 @@ class Slicer:
             vol[z] = self[z]
         return vol
         
-    def toint8_function(self):
+    def to_uint8(self):
         ''' Returns a suitable function which casts slicer output to uint8.
         TODO: include other relevant options.'''
         
         if self.dtype == np.dtype('uint8'):
-            return(lambda im: im)
+            return Slicer.identity
         
         if self.dtype == np.dtype('uint16'):
-            return(lambda im: (im/256).astype('uint8'))
+            return Slicer.uint16_to_8
 
         if self.dtype == np.dtype('float32'):       
             if self.range is None:
                 return Slicer.slicewise
             else:
-                return lambda im: Slicer.to_range(im, self.range)
-
+                return self.to_range
+                
         else:
             return Slicer.slicewise
-
+        
+    def to_range(self, im):
+        im -= self.range[0]
+        im *= 1/(self.range[1] - self.range[0])
+        return (255*im).astype('uint8')
 
     @staticmethod
-    def to_range(im, range):
-        im -= range[0]
-        im *= 1/(range[1] - range[0])
-        return (255*im).astype('uint8')
-    
+    def identity(im):
+        return im
+
+    @staticmethod
+    def uint16_to_8(im):
+        return (im/256).astype('uint8')
 
     @staticmethod
     def slicewise(im):
