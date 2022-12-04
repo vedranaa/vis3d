@@ -2,7 +2,8 @@
 import slicers
 import matplotlib.pyplot as plt
 
-#%% VGI slicer
+#%% 
+# VGI slicer
 
 file = ('/Volumes/3dimage/projects/2022_QIM_55_BugNIST/raw_data_3DIM/'
         'bugnist_tube [2022-04-12 12.53.01]/bugnist_tube_recon/bugnist_tube.vgi')
@@ -23,7 +24,8 @@ for z, a in zip(S, ax):
 plt.show()
 
 
-#%% TMX slicer
+#%% 
+# TMX slicer
 
 file = ('/Volumes/3dimage/projects/2022_DANFIX_UTMOST/raw_data_3DIM/'
         'starting sandwich/starting sandwich_2022-05-27_100917/'
@@ -43,7 +45,9 @@ for z, a in zip(S, ax):
     a.imshow(im)
 plt.show()
 
-# %%
+# %% 
+# Tiff folder
+
 folder = ('/Volumes/3dimage/projects/2021_QIM_14_dental_implants/raw_data_extern/'
         'Bone_implants_project/s16007_silk/matlab_aligned_downscaled')
 slicer = slicers.TiffFolderSlicer(folder)
@@ -62,7 +66,8 @@ for z, a in zip(S, ax):
 plt.show()
 
 
-#%%
+#%%  
+# Folder
 folder = ('/Volumes/3dimage/projects/2021_QIM_14_dental_implants/'
         'raw_data_extern/16_1080_LR_stitched_4x4bin')
 slicer = slicers.FolderSlicer(folder)
@@ -80,7 +85,8 @@ for z, a in zip(S, ax):
     a.imshow(im)
 plt.show()
 
-#%%
+#%% 
+# TiffFile
 file = ('/Users/VAND/Documents/PROJECTS/FastLocalThickness/local-thickness_git/'
         'data/cotton_test_volume.tif')
 slicer = slicers.TiffFileSlicer(file)
@@ -99,7 +105,8 @@ for z, a in zip(S, ax):
 plt.show()
 
 
-#%%
+#%% 
+# File
 file = '/Users/VAND/Documents/PROJECTS/FastLocalThickness/testing_data_3D/bonesub.tif'
 slicer = slicers.FileSlicer(file)
 
@@ -116,7 +123,8 @@ for z, a in zip(S, ax):
     a.imshow(im)
 plt.show()
 
-#%%
+#%% 
+# Url
 url = 'https://qim.compute.dtu.dk/data-repository/InSegt_data/3D/nerves_part.tiff'
 slicer = slicers.FileSlicer.from_url(url)
 
@@ -135,6 +143,8 @@ plt.show()
 
 
 # %%
+# Loading all volumes from links
+
 import glob
 import slicers
 import matplotlib.pyplot as plt
@@ -158,43 +168,4 @@ plt.show()
 
 
 
-#%% STILL PROBLEMS BELOW!!
-
-slicer = slicers.slicer('/Volumes/3dimage/projects/2020_QIM_22_rat_kidney/raw_data_3DIM'
-        '/rat3/rat3_22micron/20200903 rat 3_LFOV-50kV-LE3-10s-22.6micro_recon_Export.tiff')
-
-# %%
-volume = slicer.loadvol(verbose=True)
-# %%
-import matplotlib.pyplot as plt
-
-Z = volume.shape[0]
-fig, ax = plt.subplots()
-z = Z//2 + 1 # I accidentaly messed up with z
-im = volume[z]
-ax.imshow(im)
-ax.set_title(z)
-plt.show()
-
-# %%
-print(np.isnan(im).sum())
-print(np.isinf(im).sum())
-
-# %%
-cliptest = im.copy()
-cliptest[np.isinf(im)] = 2**16-1
-cliptest[np.isnan(im)] = 0
-fig, ax = plt.subplots()
-ax.imshow(cliptest)
-plt.show()
-
-#%%
-
-test = im.astype(np.uint16)
-fig, ax = plt.subplots()
-ax.imshow(test)
-plt.show()
-# %%
-import matplotlib
-matplotlib.use('Qt5Agg')
 # %%
