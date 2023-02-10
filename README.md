@@ -44,6 +44,7 @@ pip install compoundfiles
 wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/vis3d.py 
 wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/slicers.py 
 wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/setup.py
+wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/README.md
 ````
 
 - Run editable install when in the folder containing `setup.py`
