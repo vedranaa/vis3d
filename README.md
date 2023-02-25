@@ -69,10 +69,11 @@ wget -N https://raw.githubusercontent.com/vedranaa/vis3d/main/links_gbar/nerves_
 
 
 ## USE
-- Use commands below to log on the node, navigate to the project folder and run `init.sh` which will set the environment etc.
+- Use commands below to log on the node, navigate to the project folder, and run `init.sh` which will set the environment etc.
 
 ```
 linuxsh -X
+cd <PROJECT FOLDER>
 . init.sh
 ```
 
