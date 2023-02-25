@@ -21,10 +21,14 @@ TODO Functionality for changing vmin and vmax
 TODO When pressing 'I', show info about the volume
 
 TODO add support for: 
+- panning the zoom-in window 
 - dcm images (via pydicom?)
 - .nii.gz file (via nibabel?)
 - npy file containing 3d numpy array
 - nrrd file (nearly raw), as in 2022_QIM_54_Butterflies
+- changing the file/slicer (via chose_file)
+- chaning the intensity range (maybe a slice-wise range between 
+    10 and 90 percentile)
 """
 
 import sys 
@@ -68,7 +72,7 @@ class Vis3d(PyQt5.QtWidgets.QWidget):
         self.offset = PyQt5.QtCore.QPoint(0, 0) # offset between image center and area of interest center
         
         # Atributes relating to zooming
-        self.activelyZooming = False 
+        self.activelyZooming = False
         self.newZoomValues = None
         self.clickedPoint = PyQt5.QtCore.QPoint()
         self.zoomPainter = None
@@ -319,7 +323,8 @@ def main():
     else:
         volumename = chose_file()  # May return None.
 
-    if volumename:    
+    if volumename:
+        print('Starting slicer...')
         slicer = slicers.slicer(volumename)                
         vis3d = Vis3d(slicer)
         vis3d.show()
@@ -333,6 +338,7 @@ if __name__ == '__main__':
     via a dialog window.
     '''
     main()
+  
 
    
     

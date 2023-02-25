@@ -339,7 +339,7 @@ def slicer(source):
         if ext == '.vol':
             return VgiSlicer(source.replace('.vol', '.vgi'))
 
-        if ext == '.txm':
+        if ext == '.txm' or ext=='.txrm':
             return TxmSlicer(source)
         
         # A single file containing volume name, resolved by recursion.
