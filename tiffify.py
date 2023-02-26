@@ -12,7 +12,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Save volume as downscaled tif.')
     parser.add_argument('source')
-    parser.add_argument('destination')
+    parser.add_argument('destination', nargs='?')
     parser.add_argument('-f', '--factor', type=int, default=8) 
     # TODO add argument specifying dtype conversion
 
