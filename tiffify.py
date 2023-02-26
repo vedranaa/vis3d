@@ -17,7 +17,7 @@ def main():
     parser.add_argument('-f', '--factor', type=int, default=8) 
     parser.add_argument('--vrange', nargs=2)
     parser.add_argument('--dtype')
-    parser.add_argument('--overwrite', type=bool, action='store_true', default=False)
+    parser.add_argument('--overwrite', action='store_true', default=False)
     
     args = parser.parse_args()
 
