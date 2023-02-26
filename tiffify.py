@@ -15,7 +15,7 @@ def main():
     parser.add_argument('source')
     parser.add_argument('destination', nargs='?')
     parser.add_argument('-f', '--factor', type=int, default=8) 
-    parser.add_argument('--vrange')
+    parser.add_argument('--vrange', nargs=2)
     parser.add_argument('--dtype')
     
     args = parser.parse_args()
@@ -30,9 +30,8 @@ def main():
     if args.vrange is None:
         normalize = lambda s: s
     else:
-        vrange = np.array(args.vrange)
-        normalize = lambda s: np.clip((s - vrange[0])/
-            (vrange[1] - vrange[0]), vrange[0], vrange[1])
+        vmin, vmax = args.vrange
+        normalize = lambda s: np.clip((s - vmin)/(vmax - vmin), vmin, vmax)
     
     if args.dtype is None:
         cast = lambda s: s
