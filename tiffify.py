@@ -13,9 +13,12 @@ def main():
     parser = argparse.ArgumentParser(description='Save volume as downscaled tif.')
     parser.add_argument('source')
     parser.add_argument('destination')
-    parser.add_argument('factor', required=False, type=int, default=8) 
-    # parser.add_argument('-f', '--factor', , type=int, default=8) - IF MORE ARGS ARE ADDED  
+    parser.add_argument('-f', '--factor', type=int, default=8) 
+    # TODO add argument specifying dtype conversion
+
     args = parser.parse_args()
+    if args.destination is None:
+        args.destination = 'tiffified_volume.tif'
     
     slicer = slicers.slicer(args.source)
     writer =  slicers.tifffile.TiffWriter(args.destination)
