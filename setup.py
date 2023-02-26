@@ -15,7 +15,8 @@ setup(
     version='0.0.1',
     entry_points={
         'console_scripts': [
-            'vis3d=vis3d:main'
+            'vis3d=vis3d:main',
+            'tiffify=tiffify:main'
         ]
     }
 )
