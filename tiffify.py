@@ -34,12 +34,13 @@ def main():
         normalize = lambda s: s
     else:
         vmin, vmax = args.vrange
-        normalize = lambda s: np.clip((s - vmin)/(vmax - vmin), vmin, vmax)
+        normalize = lambda s: np.clip((s.astype(float) - vmin)/(vmax - vmin), 0, 1)
     
     if args.dtype is None:
         cast = lambda s: s
     else:
-        cast = lambda s: s.astype(args.dtype)
+        m = {'uint8': 255, 'uint16': 65535}
+        cast = lambda s: (m[args.dtype] * s).astype(args.dtype)
 
     print('Opening source volume.')
 
