@@ -17,13 +17,16 @@ def main():
     parser.add_argument('-f', '--factor', type=int, default=8) 
     parser.add_argument('--vrange', nargs=2)
     parser.add_argument('--dtype')
+    parser.add_argument('--overwrite', type=bool, action='store_true', default=False)
     
     args = parser.parse_args()
+
+    print(f'args.overwrite=')
 
     if args.destination is None:
         args.destination = 'tiffified_volume.tif'
     
-    if os.path.isfile(args.destination):
+    if (not args.overwrite) and os.path.isfile(args.destination):
         print('Destination file already exists. Aborting')
         return
     
