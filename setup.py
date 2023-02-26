@@ -12,7 +12,8 @@ from setuptools import setup
 
 setup(
     name='vis3d',
-    version='0.0.1',
+    version='0.0.2',
+    py_modules = 'vis3d'
     entry_points={
         'console_scripts': [
             'vis3d=vis3d:main',
