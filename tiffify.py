@@ -1,6 +1,24 @@
 """
-Run from command line as 
-tiffify source_filename destination_filename downscale_factor=8
+Save a volume as downscaled tif.
+
+Run from command line, for example: 
+    tiffify source destination -factor 4
+
+    Positional arguments:
+    - source, source volume filename (path)
+    - destination, destination filename (path), defaults to tiffified_volume.tif
+
+    Options taking values:
+    - factor, int, defaults to 8. Downscaling factor.
+    - vrange, consumes two arguments. If given values will be scaled such that
+        vrange maps to [0, 1], truncating the values outside the range 
+    - dtype, destination dtype. If set to uint8 or uint16 values will be 
+        multiplied and casted. NOTE: use only if values are scaled to [0, 1], 
+        e.g. by using vrange.
+
+    Flag:
+    - overwrite. If set than allows overwritting. NOTE: use with care.
+
 """
 
 
@@ -11,17 +29,17 @@ import os
               
 def main():
 
+
+
     parser = argparse.ArgumentParser(description='Save volume as downscaled tif.')
     parser.add_argument('source')
     parser.add_argument('destination', nargs='?')
-    parser.add_argument('-f', '--factor', type=int, default=8) 
+    parser.add_argument('--factor', type=int, default=8) 
     parser.add_argument('--vrange', nargs=2)
     parser.add_argument('--dtype')
     parser.add_argument('--overwrite', action='store_true', default=False)
     
     args = parser.parse_args()
-
-    print(f'args.overwrite=')
 
     if args.destination is None:
         args.destination = 'tiffified_volume.tif'
