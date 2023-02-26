@@ -23,10 +23,11 @@ def main():
     if args.destination is None:
         args.destination = 'tiffified_volume.tif'
     
-    assert(not os.path.isfile(args.destination), 
-        'Destination file already exists.')
+    if os.path.isfile(args.destination):
+        print('Destination file already exists. Aborting')
+        return
     
-    if args.valrange is None:
+    if args.vrange is None:
         normalize = lambda s: s
     else:
         vrange = np.array(args.valrange)
@@ -49,7 +50,7 @@ def main():
     X = range((slicer.imshape[1]%args.factor)//2, slicer.imshape[1], args.factor) 
     subindexing = np.ix_(Y, X)
 
-    print(f'Writing a volume of size {len(Z)}, {len(Y)}, {len(X)}... ', end='')
+    print(f'Writing volume of size {len(Z)}, {len(Y)}, {len(X)}... ', end='')
     for z in Z:
         slice = slicer[z]
         subslice = slice[subindexing]
