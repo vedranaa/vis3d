@@ -30,7 +30,7 @@ def main():
     if args.vrange is None:
         normalize = lambda s: s
     else:
-        vrange = np.array(args.valrange)
+        vrange = np.array(args.vrange)
         normalize = lambda s: np.clip((s - vrange[0])/
             (vrange[1] - vrange[0]), vrange[0], vrange[1])
     
