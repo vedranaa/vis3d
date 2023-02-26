@@ -23,16 +23,18 @@ def main():
     slicer = slicers.slicer(args.source)
     writer =  slicers.tifffile.TiffWriter(args.destination)
 
+    # downsapling by args.factor
     Z = range((len(slicer)%args.factor)//2, len(slicer), args.factor) 
     Y = range((slicer.imshape[0]%args.factor)//2, slicer.imshape[0], args.factor) 
     X = range((slicer.imshape[1]%args.factor)//2, slicer.imshape[1], args.factor) 
+    subindexing = np.ix_(Y, X)
 
-    print(f'Writing volume of size {len(Z)}, {len(Y)}, {len(X)}')
+    print(f'Writing a volume of size {len(Z)}, {len(Y)}, {len(X)}... ', end='')
     for z in Z:
         slice = slicer[z]
-        writer.write(slice[Y, X], contiguous=True)           
+        writer.write(slice[subindexing])           
     writer.close()    
-
+    print('Done!')
     
 if __name__ == '__main__':
     
