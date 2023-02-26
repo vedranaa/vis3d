@@ -29,8 +29,6 @@ import os
               
 def main():
 
-
-
     parser = argparse.ArgumentParser(description='Save volume as downscaled tif.')
     parser.add_argument('source')
     parser.add_argument('destination', nargs='?')
@@ -48,12 +46,14 @@ def main():
         print('Destination file already exists. Aborting')
         return
     
+    # Normalization function, if vrange given
     if args.vrange is None:
         normalize = lambda s: s
     else:
         vmin, vmax = args.vrange
         normalize = lambda s: np.clip((s.astype(float) - vmin)/(vmax - vmin), 0, 1)
     
+    # Casting, if dtype given
     if args.dtype is None:
         cast = lambda s: s
     else:
@@ -61,17 +61,23 @@ def main():
         cast = lambda s: (m[args.dtype] * s).astype(args.dtype)
 
     print('Opening source volume.')
-
     slicer = slicers.slicer(args.source)
-    writer =  slicers.tifffile.TiffWriter(args.destination)
-
-    # downsapling by args.factor
+    
+    # Preparing to downsample by args.factor
     Z = range((len(slicer)%args.factor)//2, len(slicer), args.factor) 
     Y = range((slicer.imshape[0]%args.factor)//2, slicer.imshape[0], args.factor) 
     X = range((slicer.imshape[1]%args.factor)//2, slicer.imshape[1], args.factor) 
     subindexing = np.ix_(Y, X)
 
-    print(f'Writing volume of size {len(Z)}, {len(Y)}, {len(X)}... ', end='')
+    # Trying on the first slice, to avoid opening file if something goes wrong.
+    slice = slicer[0]
+    subslice = slice[subindexing]
+    subslice = normalize(subslice)
+    subslice = cast(subslice)
+    
+    print(f'Writing volume of size {len(Z)}, {len(Y)}, {len(X)}... ', end='')    
+    writer =  slicers.tifffile.TiffWriter(args.destination)
+    
     for z in Z:
         slice = slicer[z]
         subslice = slice[subindexing]
