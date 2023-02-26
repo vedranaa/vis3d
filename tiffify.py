@@ -51,6 +51,7 @@ def main():
         normalize = lambda s: s
     else:
         vmin, vmax = args.vrange
+        vmin, vmax = float(vmin), float(vmax)
         normalize = lambda s: np.clip((s.astype(float) - vmin)/(vmax - vmin), 0, 1)
     
     # Casting, if dtype given
@@ -77,7 +78,7 @@ def main():
     
     print(f'Writing volume of size {len(Z)}, {len(Y)}, {len(X)}... ', end='')    
     writer =  slicers.tifffile.TiffWriter(args.destination)
-    
+
     for z in Z:
         slice = slicer[z]
         subslice = slice[subindexing]
