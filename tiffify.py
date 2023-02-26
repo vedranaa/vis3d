@@ -7,6 +7,7 @@ tiffify source_filename destination_filename downscale_factor=8
 import numpy as np
 import slicers
 import argparse
+import os
               
 def main():
 
@@ -14,12 +15,31 @@ def main():
     parser.add_argument('source')
     parser.add_argument('destination', nargs='?')
     parser.add_argument('-f', '--factor', type=int, default=8) 
-    # TODO add argument specifying dtype conversion
-
+    parser.add_argument('--vrange')
+    parser.add_argument('--dtype')
+    
     args = parser.parse_args()
+
     if args.destination is None:
         args.destination = 'tiffified_volume.tif'
     
+    assert(not os.path.isfile(args.destination), 
+        'Destination file already exists.')
+    
+    if args.valrange is None:
+        normalize = lambda s: s
+    else:
+        vrange = np.array(args.valrange)
+        normalize = lambda s: np.clip((s - vrange[0])/
+            (vrange[1] - vrange[0]), vrange[0], vrange[1])
+    
+    if args.dtype is None:
+        cast = lambda s: s
+    else:
+        cast = lambda s: s.astype(args.dtype)
+
+    print('Opening source volume.')
+
     slicer = slicers.slicer(args.source)
     writer =  slicers.tifffile.TiffWriter(args.destination)
 
@@ -32,7 +52,10 @@ def main():
     print(f'Writing a volume of size {len(Z)}, {len(Y)}, {len(X)}... ', end='')
     for z in Z:
         slice = slicer[z]
-        writer.write(slice[subindexing])           
+        subslice = slice[subindexing]
+        subslice = normalize(subslice)
+        subslice = cast(subslice)
+        writer.write(subslice)           
     writer.close()    
     print('Done!')
     
