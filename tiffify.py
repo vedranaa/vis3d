@@ -13,7 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description='Save volume as downscaled tif.')
     parser.add_argument('source')
     parser.add_argument('destination')
-    parser.add_argument('factor', type=int, default=8) 
+    parser.add_argument('factor', required=False, type=int, default=8) 
     # parser.add_argument('-f', '--factor', , type=int, default=8) - IF MORE ARGS ARE ADDED  
     args = parser.parse_args()
     
