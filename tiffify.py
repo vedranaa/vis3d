@@ -76,7 +76,8 @@ def main():
     subslice = normalize(subslice)
     subslice = cast(subslice)
     
-    print(f'Writing volume of size {len(Z)}, {len(Y)}, {len(X)}... ', end='')    
+    print(f'Writing volume of size {len(Z)}, {len(Y)}, {len(X)}... ', 
+          end='', flush=True)    
     writer =  slicers.tifffile.TiffWriter(args.destination)
 
     for z in Z:
