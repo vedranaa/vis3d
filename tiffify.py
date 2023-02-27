@@ -42,8 +42,8 @@ def main():
     if args.destination is None:
         args.destination = 'tiffified_volume.tif'
     
-    if (not args.overwrite) and os.path.isfile(args.destination):
-        print('Destination file already exists. Aborting')
+    if (not args.overwrite) and os.path.exists(args.destination):
+        print('Destination already exists. Aborting')
         return
     
     # Normalization function, if vrange given
