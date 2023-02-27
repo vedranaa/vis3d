@@ -88,3 +88,6 @@ vis3d path
 vis3d file 
 ```
 
+## TODOS
+* When slicer points to non-existant file, it errors saying that there is no stream to close. Detect that something's wrong sooner and make sure not to try closing if no stream has been opened.
+* Figure out setup such that vis3D and tiffify can be installed independently. And be used both from .py and from CL.
