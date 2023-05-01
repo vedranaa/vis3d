@@ -73,7 +73,7 @@ This should open an interactive window, hold key `H` for help.
 - .txt file containing a URL or file/folder path
 
 ## EXTRA
-- Save a volume as downscaled tif from the command line using
+Save a volume as downscaled tif from the command line using
 ````
 tiffify <SOURCE> <DESTINATION> -factor <FACTOR>
 ````
