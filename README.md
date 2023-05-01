@@ -1,7 +1,7 @@
 # vis3D
 *Tools for working with volumes at DTU G-bar.*
 
-![](Screenshot.png)
+![](Screenshot.png | width=100)
 
 ## SETUP
 
