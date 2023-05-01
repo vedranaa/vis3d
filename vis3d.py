@@ -16,6 +16,9 @@ Currently supported:
 - .txm file
 - .txt file containing a url or file/folder path
 
+TODO Figure out setup such that vis3D and tiffify can be installed 
+    independently. And such that both can be used from .py and from CL.
+
 TODO test whether txm works for txrm file, as in 2022_DANFIX_UTMOST
 TODO Functionality for changing vmin and vmax
 TODO When pressing 'I', show info about the volume

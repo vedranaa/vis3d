@@ -309,6 +309,7 @@ def slicer(source):
 
     '''
 
+    # In an unusual case of being given np array
     if ((type(source)==np.ndarray) and (source.ndim==3)):
         return npSlicer(source)
 

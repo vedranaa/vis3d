@@ -18,7 +18,7 @@ setup(
             'vis3d=vis3d:main',
             'tiffify=tiffify:main'
         ]
-    }
+    },
     install_requires = ['PyQt5', 'tifffile', 'Pillow', 
                         'imagecodecs', 'compoundfiles']
 )
