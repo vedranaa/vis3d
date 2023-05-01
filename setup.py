@@ -6,7 +6,6 @@ pip install -e </path/to/folder/containing/setup.py>
 directory to the directory in which the code lives, meaning the latest version
 will be used without need to reinstall.
 
-TODO: requires PyQt5, tifffile, Pillow
 '''
 from setuptools import setup
 
@@ -20,4 +19,6 @@ setup(
             'tiffify=tiffify:main'
         ]
     }
+    install_requires = ['PyQt5', 'tifffile', 'Pillow', 
+                        'imagecodecs', 'compoundfiles']
 )
