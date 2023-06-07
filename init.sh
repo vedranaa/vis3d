@@ -1,4 +1,4 @@
-a#!/bin/bash
+#!/bin/bash
 # Based on simple init script for Python on DTU HPC
 # by Patrick M. Jensen, patmjen@dtu.dk, 2022
 
