@@ -45,7 +45,7 @@ This should open a file navigation window. Navigate to folder `links_gbar` and o
 
 
 ## USE
-Use the commands below to log on a node, navigate to the project folder, and run `init.sh` using:
+Use the commands below to log on a node, navigate to the project folder, and run `init.sh`:
 
 ```
 linuxsh -X
