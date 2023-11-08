@@ -76,11 +76,11 @@ This should open an interactive window, hold key `H` for help.
 ## EXTRA
 Save a volume as downscaled tif from the command line using
 ````
-tiffify <SOURCE> <DESTINATION> -factor <FACTOR>
+tiffify <SOURCE> <DESTINATION> --factor <FACTOR>
 ````
 For example:
 ````
-tiffify somewhere/something.vgi here/this.tif -factor 4
+tiffify somewhere/something.vgi here/this.tif --factor 4
 ````
 
 ## KNOWN BUGS
