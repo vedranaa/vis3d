@@ -36,6 +36,11 @@ Run editable install (from the folder containing `setup.py`):
 pip install -e .
 ```
 
+If installing into an existing conda environment that already has the needed dependencies, use:
+```
+pip install --no-deps -e .
+```
+
 Test the setup by running:
 ```
 vis3d

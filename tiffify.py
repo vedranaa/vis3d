@@ -54,14 +54,19 @@ def main():
     if (not args.overwrite) and os.path.exists(args.destination):
         print('Destination already exists. Aborting')
         return
+
+    print('Opening source volume.')
+    slicer = slicers.slicer(args.source)
+    source_dtype = np.dtype(slicer.dtype)
     
     # Normalization function, if vrange given
     if args.vrange is None:
         normalize = lambda s: s
     else:
         vmin, vmax = args.vrange
-        vmin, vmax = float(vmin), float(vmax)
-        normalize = lambda s: np.clip((s.astype(float) - vmin)/(vmax - vmin), 0, 1)
+        vmin = source_dtype.type(vmin)
+        vmax = source_dtype.type(vmax)
+        normalize = lambda s: np.clip((s.astype(source_dtype, copy=False) - vmin)/(vmax - vmin), 0, 1)
     
     # Casting, if dtype given
     if args.dtype is None:
@@ -69,9 +74,6 @@ def main():
     else:
         m = {'uint8': 255, 'uint16': 65535}
         cast = lambda s: (m[args.dtype] * s).astype(args.dtype)
-
-    print('Opening source volume.')
-    slicer = slicers.slicer(args.source)
 
     def prepare_resampling(length):
         # Preparing to downsample by args.factor for each dimension
